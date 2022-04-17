@@ -15,6 +15,9 @@ android {
     }
 
     buildTypes {
+        debug {
+            buildConfigField("String",  "BASE_URL", "\"${base_url}\"")
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -36,4 +39,6 @@ dependencies {
     api 'com.squareup.retrofit2:converter-gson:2.9.0'
     api 'com.squareup.retrofit2:adapter-rxjava2:2.9.0'
     api 'com.squareup.okhttp3:logging-interceptor:4.9.0'
+    // Koin for di
+    implementation 'io.insert-koin:koin-android:3.2.0-beta-1'
 }
