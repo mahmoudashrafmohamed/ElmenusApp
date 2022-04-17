@@ -1,4 +1,4 @@
-package com.mahmoud_ashraf.menustask.menu
+package com.mahmoud_ashraf.menustask.menu.fragments
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
