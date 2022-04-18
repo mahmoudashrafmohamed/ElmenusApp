@@ -13,8 +13,9 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        android:scaleType="centerCrop"
         tools:background="@color/orange"
-        android:layout_height="90dp"/>
+        android:layout_height="200dp"/>
 
     <TextView
         android:id="@+id/tv_item_name"

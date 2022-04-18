@@ -1,6 +1,7 @@
 package com.mahmoud_ashraf.menustask.menu.viewmodel
 
 import androidx.lifecycle.MutableLiveData
+import com.mahmoud_ashraf.domain.menu.models.ItemOfTagModel
 import com.mahmoud_ashraf.domain.menu.models.TagsModel
 import com.mahmoud_ashraf.domain.menu.usecase.GetItemsOfTagsUseCase
 import com.mahmoud_ashraf.domain.menu.usecase.GetTagsUseCase
@@ -46,11 +47,26 @@ private val backgroundScheduler : Scheduler = Schedulers.io()
         }
     }
 
+    fun getItemsOfTags(tagName: String) {
+        screenState.postValue(MenuScreenStates.Loading)
+        getItemsOfTagsUseCase(tagName)
+            .subscribeOn(backgroundScheduler)
+            .observeOn(backgroundScheduler)
+            .subscribe({
+                    screenState.postValue(MenuScreenStates.ItemsOfTagLoadedSuccessfully(it))
+            }, {
+                it.printStackTrace()
+                screenState.postValue(MenuScreenStates.Error(it))
+            })
+            .also(::addDisposable)
+    }
+
 
 }
 
 sealed class MenuScreenStates {
     object Loading : MenuScreenStates()
     data class TagsLoadedSuccessfully(val tags: List<TagsModel>) : MenuScreenStates()
+    data class ItemsOfTagLoadedSuccessfully(val items: List<ItemOfTagModel>) : MenuScreenStates()
     data class Error(val error: Throwable) : MenuScreenStates()
 }

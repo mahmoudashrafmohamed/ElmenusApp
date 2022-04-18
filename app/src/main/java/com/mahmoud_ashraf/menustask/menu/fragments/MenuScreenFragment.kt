@@ -9,9 +9,11 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.mahmoud_ashraf.domain.menu.models.TagsModel
 import com.mahmoud_ashraf.menustask.core.androidExtensions.observe
 import com.mahmoud_ashraf.menustask.core.pagination.ScrollingPagination
 import com.mahmoud_ashraf.menustask.databinding.FragmentMenuScreenBinding
+import com.mahmoud_ashraf.menustask.menu.adapters.ItemsOfTagAdapter
 import com.mahmoud_ashraf.menustask.menu.adapters.TagsAdapter
 import com.mahmoud_ashraf.menustask.menu.viewmodel.MenuScreenStates
 import com.mahmoud_ashraf.menustask.menu.viewmodel.MenuViewModel
@@ -26,7 +28,12 @@ class MenuScreenFragment : Fragment() {
     // This property is only valid between onCreateView and onDestroyView.
     private val binding get() = _binding!!
 
-    private val tagsAdapter by lazy { TagsAdapter() }
+    private val tagsAdapter by lazy { TagsAdapter(onItemClicked =::onItemClicked ) }
+    private val itemsOfTagAdapter by lazy { ItemsOfTagAdapter() }
+
+    private fun onItemClicked(tagsModel: TagsModel) {
+        viewModel.getItemsOfTags(tagsModel.tagName)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -46,18 +53,29 @@ class MenuScreenFragment : Fragment() {
 
     private fun observeOnScreenState(state: MenuScreenStates) {
         when (state) {
-            is MenuScreenStates.Loading -> {
-                binding.progressBar.isVisible = true
-            }
+            is MenuScreenStates.Loading -> showLoading()
+
             is MenuScreenStates.TagsLoadedSuccessfully -> {
-                binding.progressBar.isVisible = false
+                hideLoading()
                 tagsAdapter.submitList(tagsAdapter.currentList.toMutableList().also { it.addAll(state.tags) })
             }
             is MenuScreenStates.Error -> {
-                binding.progressBar.isVisible = false
+                hideLoading()
                // Todo -  state.error.handle()
             }
-         }
+            is MenuScreenStates.ItemsOfTagLoadedSuccessfully -> {
+                hideLoading()
+                itemsOfTagAdapter.submitList(state.items)
+            }
+        }
+    }
+
+    private fun showLoading() {
+        binding.progressBar.isVisible = true
+    }
+
+    private fun hideLoading() {
+        binding.progressBar.isVisible = false
     }
 
     private fun initViews() {
@@ -70,6 +88,7 @@ class MenuScreenFragment : Fragment() {
                     viewModel.loadMoreTags()
                 }
             })
+            rvItems.adapter = itemsOfTagAdapter
         }
     }
 

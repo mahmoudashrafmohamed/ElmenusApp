@@ -11,7 +11,7 @@ import com.mahmoud_ashraf.domain.menu.models.TagsModel
 import com.mahmoud_ashraf.menustask.R
 import com.mahmoud_ashraf.menustask.databinding.ItemTagBinding
 
-class TagsAdapter :
+class TagsAdapter(private val onItemClicked: (TagsModel) -> Unit) :
     ListAdapter<TagsModel, TagsViewHolder>(TagsDiffCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TagsViewHolder {
         return TagsViewHolder(
@@ -19,7 +19,7 @@ class TagsAdapter :
         )
     }
     override fun onBindViewHolder(holder: TagsViewHolder, position: Int) =
-        holder.bind(getItem(position))
+        holder.bind(getItem(position),onItemClicked)
 
 }
 
@@ -27,9 +27,11 @@ class TagsViewHolder(
     private val binding: ItemTagBinding
 ) : RecyclerView.ViewHolder(binding.root) {
     fun bind(
-        data: TagsModel
+        data: TagsModel,
+        onItemClicked: (TagsModel) -> Unit
     ) {
        with(binding){
+           root.setOnClickListener { onItemClicked(data) }
            Glide.with(ivTag.context).load(Uri.parse(data.photoURL)).placeholder(R.drawable.img_placeholder).into(ivTag)
            tvTagName.text = data.tagName
        }
