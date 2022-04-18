@@ -1,12 +1,16 @@
 package com.mahmoud_ashraf.menustask.menu.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.mahmoud_ashraf.menustask.core.androidExtensions.observe
+import com.mahmoud_ashraf.menustask.core.pagination.ScrollingPagination
 import com.mahmoud_ashraf.menustask.databinding.FragmentMenuScreenBinding
 import com.mahmoud_ashraf.menustask.menu.adapters.TagsAdapter
 import com.mahmoud_ashraf.menustask.menu.viewmodel.MenuScreenStates
@@ -37,7 +41,7 @@ class MenuScreenFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         observe(viewModel.screenState, ::observeOnScreenState)
         initViews()
-        viewModel.getTags("1")
+        viewModel.getTags()
     }
 
     private fun observeOnScreenState(state: MenuScreenStates) {
@@ -47,7 +51,7 @@ class MenuScreenFragment : Fragment() {
             }
             is MenuScreenStates.TagsLoadedSuccessfully -> {
                 binding.progressBar.isVisible = false
-                tagsAdapter.submitList(state.tags)
+                tagsAdapter.submitList(tagsAdapter.currentList.toMutableList().also { it.addAll(state.tags) })
             }
             is MenuScreenStates.Error -> {
                 binding.progressBar.isVisible = false
@@ -59,6 +63,13 @@ class MenuScreenFragment : Fragment() {
     private fun initViews() {
         with(binding){
             rvTags.adapter = tagsAdapter
+            rvTags.addOnScrollListener(object : ScrollingPagination(
+                rvTags.layoutManager as LinearLayoutManager
+            ) {
+                override fun loadMoreDate() {
+                    viewModel.loadMoreTags()
+                }
+            })
         }
     }
 

@@ -16,19 +16,34 @@ private val backgroundScheduler : Scheduler = Schedulers.io()
 
     internal val screenState by lazy { MutableLiveData<MenuScreenStates>() }
 
+    private var canLoading = true
+    private var pageNumber = 1
 
-    fun getTags(page : String) {
+    fun getTags(page : String = pageNumber.toString()) {
+        canLoading = false
         screenState.postValue(MenuScreenStates.Loading)
        getTagsUseCase(page)
            .subscribeOn(backgroundScheduler)
            .observeOn(backgroundScheduler)
            .subscribe({
-                    screenState.postValue(MenuScreenStates.TagsLoadedSuccessfully(it))
+               pageNumber++
+               canLoading = if (it.isNotEmpty()) {
+                   screenState.postValue(MenuScreenStates.TagsLoadedSuccessfully(it))
+                   true
+               } else{
+                   false
+               }
             }, {
                 it.printStackTrace()
                 screenState.postValue(MenuScreenStates.Error(it))
             })
             .also(::addDisposable)
+    }
+
+    fun loadMoreTags() {
+        if (canLoading) {
+            getTags()
+        }
     }
 
 
