@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/custom_navigation"
+    app:startDestination="@id/menuScreenFragment">
+
+    <fragment
+        android:id="@+id/menuScreenFragment"
+        android:name="com.mahmoud_ashraf.menustask.menu.fragments.MenuScreenFragment"
+        android:label="forecast_list_fragment"
+        tools:layout="@layout/fragment_menu_screen" />
+</navigation>
