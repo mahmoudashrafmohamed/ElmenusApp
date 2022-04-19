@@ -1,5 +1,6 @@
 package com.mahmoud_ashraf.data.repository
 
+import android.util.Log
 import com.mahmoud_ashraf.data.mappers.mapToDomain
 import com.mahmoud_ashraf.data.mappers.mapToLocalEntity
 import com.mahmoud_ashraf.data.mappers.mapToRemote
@@ -12,7 +13,7 @@ import io.reactivex.Single
 
 class MenuRepositoryImpl(
     private val tagsRemoteDataSource: TagsRemoteDataSource,
-    private val tagsLocalDataSource: TagsLocalDataSource
+    private val tagsLocalDataSource: TagsLocalDataSource,
 ) : MenuRepository {
     override fun getTags(page: String): Single<List<TagsModel>> {
         return tagsRemoteDataSource.getTags(page)
@@ -33,9 +34,27 @@ class MenuRepositoryImpl(
     }
 
     override fun getItemsOfTags(tagName: String): Single<List<ItemOfTagModel>> {
-        return tagsRemoteDataSource.getItemsTags(tagName).map { it.mapToDomain() }
+        return tagsRemoteDataSource.getItemsTags(tagName)
+            .map { it.items }
+            .flatMap {
+                tagsLocalDataSource.insertItemsOfTag(it.mapToLocalEntity(tagName)).andThen(Single.just(it))
+            }
+            .onErrorResumeNext { t ->
+                t.printStackTrace()
+                tagsLocalDataSource.getItemsOfTag(tagName)
+                    .map {
+                        Log.e("size",""+it.size)
+                        Log.e("data++++++++",""+it.toString())
+                        it.mapToRemote()
+                    }
+            }
+            .map {
+            it.mapToDomain()
+            }
     }
 }
+
+
 
 
 

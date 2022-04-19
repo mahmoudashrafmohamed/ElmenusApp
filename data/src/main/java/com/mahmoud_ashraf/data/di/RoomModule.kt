@@ -9,5 +9,6 @@ val roomModule = module {
     single { Room.databaseBuilder(androidContext(), AppDatabase::class.java, "menus_db").fallbackToDestructiveMigration().build() }
 
     single { get<AppDatabase>().tagsDao() }
+    single { get<AppDatabase>().itemsOfTagsDao() }
 
 }

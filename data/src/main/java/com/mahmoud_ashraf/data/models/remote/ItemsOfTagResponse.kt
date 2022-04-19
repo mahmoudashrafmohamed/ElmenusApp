@@ -9,7 +9,7 @@ data class ItemsOfTagResponse(
 
 data class Item(
     @SerializedName("id")
-    val id: Int,
+    val id: Long,
     @SerializedName("name")
     val name: String,
     @SerializedName("photoUrl")
