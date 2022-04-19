@@ -3,7 +3,7 @@ package com.mahmoud_ashraf.domain.menu.usecase
 import com.mahmoud_ashraf.domain.menu.models.ItemOfTagModel
 import com.mahmoud_ashraf.domain.menu.repository.MenuRepository
 import com.nhaarman.mockito_kotlin.any
-import io.reactivex.Single
+import io.reactivex.rxjava3.core.Single
 import org.junit.Test
 import org.mockito.Mockito
 import java.net.UnknownHostException
