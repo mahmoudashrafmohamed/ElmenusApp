@@ -30,10 +30,8 @@ android {
 }
 
 dependencies {
-    // RxJava
-    api 'io.reactivex.rxjava2:rxjava:2.2.19'
-    api 'io.reactivex.rxjava2:rxkotlin:2.4.0'
-    // Koin for di
+    //rxjava3
+    api "io.reactivex.rxjava3:rxjava:3.0.4"// Koin for di
     implementation 'io.insert-koin:koin-android:3.2.0-beta-1'
     // test
     testImplementation 'junit:junit:4.13.2'

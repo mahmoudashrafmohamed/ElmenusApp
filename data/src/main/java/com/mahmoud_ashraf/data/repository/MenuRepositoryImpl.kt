@@ -9,7 +9,7 @@ import com.mahmoud_ashraf.data.sources.remote.TagsRemoteDataSource
 import com.mahmoud_ashraf.domain.menu.models.ItemOfTagModel
 import com.mahmoud_ashraf.domain.menu.models.TagsModel
 import com.mahmoud_ashraf.domain.menu.repository.MenuRepository
-import io.reactivex.Single
+import io.reactivex.rxjava3.core.Single
 
 class MenuRepositoryImpl(
     private val tagsRemoteDataSource: TagsRemoteDataSource,

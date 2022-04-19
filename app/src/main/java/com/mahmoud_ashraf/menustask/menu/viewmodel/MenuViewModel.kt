@@ -6,8 +6,8 @@ import com.mahmoud_ashraf.domain.menu.models.TagsModel
 import com.mahmoud_ashraf.domain.menu.usecase.GetItemsOfTagsUseCase
 import com.mahmoud_ashraf.domain.menu.usecase.GetTagsUseCase
 import com.mahmoud_ashraf.menustask.core.base.BaseViewModel
-import io.reactivex.Scheduler
-import io.reactivex.schedulers.Schedulers
+import io.reactivex.rxjava3.core.Scheduler
+import io.reactivex.rxjava3.schedulers.Schedulers
 
 class MenuViewModel(
     private val getTagsUseCase: GetTagsUseCase,
@@ -15,7 +15,7 @@ class MenuViewModel(
 private val backgroundScheduler : Scheduler = Schedulers.io()
 ) : BaseViewModel() {
 
-    internal val screenState by lazy { MutableLiveData<MenuScreenStates>() }
+     val screenState by lazy { MutableLiveData<MenuScreenStates>() }
 
     private var canLoading = true
     private var pageNumber = 1

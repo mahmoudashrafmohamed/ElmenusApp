@@ -2,7 +2,7 @@ package com.mahmoud_ashraf.data.sources.remote
 
 import com.mahmoud_ashraf.data.models.remote.ItemsOfTagResponse
 import com.mahmoud_ashraf.data.models.remote.TagsResponse
-import io.reactivex.Single
+import io.reactivex.rxjava3.core.Single
 import retrofit2.http.GET
 import retrofit2.http.Path
 
