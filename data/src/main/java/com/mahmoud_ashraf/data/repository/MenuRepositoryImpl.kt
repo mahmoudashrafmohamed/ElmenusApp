@@ -1,6 +1,6 @@
 package com.mahmoud_ashraf.data.repository
 
-import android.util.Log
+import com.mahmoud_ashraf.data.core.exceptions.MenusExceptionWrapper
 import com.mahmoud_ashraf.data.mappers.mapToDomain
 import com.mahmoud_ashraf.data.mappers.mapToLocalEntity
 import com.mahmoud_ashraf.data.mappers.mapToRemote
@@ -23,9 +23,10 @@ class MenuRepositoryImpl(
             }
             .onErrorResumeNext { t ->
                 t.printStackTrace()
+
                 tagsLocalDataSource.getTags(page)
-                    .map {
-                        it.mapToRemote()
+                    .flatMap {
+                        Single.error(MenusExceptionWrapper(t,it.mapToRemote().mapToDomain()))
                     }
             }
             .map {
@@ -42,10 +43,8 @@ class MenuRepositoryImpl(
             .onErrorResumeNext { t ->
                 t.printStackTrace()
                 tagsLocalDataSource.getItemsOfTag(tagName)
-                    .map {
-                        Log.e("size",""+it.size)
-                        Log.e("data++++++++",""+it.toString())
-                        it.mapToRemote()
+                    .flatMap {
+                        Single.error(MenusExceptionWrapper(t,it.mapToRemote().mapToDomain()))
                     }
             }
             .map {
