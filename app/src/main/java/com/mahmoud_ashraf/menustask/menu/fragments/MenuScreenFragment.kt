@@ -20,6 +20,8 @@ import com.mahmoud_ashraf.menustask.R
 import com.mahmoud_ashraf.menustask.core.ITEM_DESC
 import com.mahmoud_ashraf.menustask.core.PHOTO_URL
 import com.mahmoud_ashraf.menustask.core.androidExtensions.observe
+import com.mahmoud_ashraf.menustask.core.androidExtensions.showErrorSnackBar
+import com.mahmoud_ashraf.menustask.core.exceptions.MenusException
 import com.mahmoud_ashraf.menustask.core.pagination.ScrollingPagination
 import com.mahmoud_ashraf.menustask.databinding.FragmentMenuScreenBinding
 import com.mahmoud_ashraf.menustask.menu.adapters.ItemsOfTagAdapter
@@ -83,13 +85,20 @@ class MenuScreenFragment : Fragment() {
                 tagsAdapter.submitList(
                     tagsAdapter.currentList.toMutableList().also { it.addAll(state.tags) })
             }
-            is MenuScreenStates.Error -> {
+            is MenuScreenStates.TagsError -> {
                 hideLoading()
-                // Todo -  state.error.handle()
+                state.error.handle()
+                tagsAdapter.submitList(
+                    tagsAdapter.currentList.toMutableList().also { it.addAll(state.list) })
             }
             is MenuScreenStates.ItemsOfTagLoadedSuccessfully -> {
                 hideLoading()
                 itemsOfTagAdapter.submitList(state.items)
+            }
+            is MenuScreenStates.ItemsOfTagsError -> {
+                hideLoading()
+                state.error.handle()
+                itemsOfTagAdapter.submitList(state.list)
             }
         }
     }
@@ -127,4 +136,13 @@ class MenuScreenFragment : Fragment() {
         _binding = null
     }
 
+    private fun MenusException.handle() {
+        when (this) {
+            is MenusException.NoConnection -> showErrorSnackBar(binding.root, getString(R.string.lbl_no_internet_error_message))
+            else -> showErrorSnackBar(binding.root, getString(R.string.lbl_generic_error_message))
+        }
+    }
+
 }
+
+

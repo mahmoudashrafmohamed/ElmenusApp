@@ -1,11 +1,14 @@
 package com.mahmoud_ashraf.menustask.menu.viewmodel
 
 import androidx.lifecycle.MutableLiveData
+import com.mahmoud_ashraf.data.core.exceptions.MenusExceptionWrapper
 import com.mahmoud_ashraf.domain.menu.models.ItemOfTagModel
 import com.mahmoud_ashraf.domain.menu.models.TagsModel
 import com.mahmoud_ashraf.domain.menu.usecase.GetItemsOfTagsUseCase
 import com.mahmoud_ashraf.domain.menu.usecase.GetTagsUseCase
 import com.mahmoud_ashraf.menustask.core.base.BaseViewModel
+import com.mahmoud_ashraf.menustask.core.exceptions.MenusException
+import com.mahmoud_ashraf.menustask.core.handleError
 import io.reactivex.rxjava3.core.Scheduler
 import io.reactivex.rxjava3.schedulers.Schedulers
 
@@ -36,7 +39,15 @@ private val backgroundScheduler : Scheduler = Schedulers.io()
                }
             }, {
                 it.printStackTrace()
-                screenState.postValue(MenuScreenStates.Error(it))
+               when (it) {
+                   is MenusExceptionWrapper -> {
+                       screenState.postValue(MenuScreenStates.TagsError(
+                           handleError(it.throwable),
+                           it.data as List<TagsModel>
+                       ))
+                   }
+               }
+
             })
             .also(::addDisposable)
     }
@@ -56,7 +67,11 @@ private val backgroundScheduler : Scheduler = Schedulers.io()
                     screenState.postValue(MenuScreenStates.ItemsOfTagLoadedSuccessfully(it))
             }, {
                 it.printStackTrace()
-                screenState.postValue(MenuScreenStates.Error(it))
+                when (it) {
+                    is MenusExceptionWrapper -> {
+                            screenState.postValue(MenuScreenStates.ItemsOfTagsError(handleError(it.throwable),it.data as List<ItemOfTagModel>))
+                    }
+                }
             })
             .also(::addDisposable)
     }
@@ -67,6 +82,7 @@ private val backgroundScheduler : Scheduler = Schedulers.io()
 sealed class MenuScreenStates {
     object Loading : MenuScreenStates()
     data class TagsLoadedSuccessfully(val tags: List<TagsModel>) : MenuScreenStates()
-    data class ItemsOfTagLoadedSuccessfully(val items: List<ItemOfTagModel>) : MenuScreenStates()
-    data class Error(val error: Throwable) : MenuScreenStates()
+    data class ItemsOfTagLoadedSuccessfully(val items: List<ItemOfTagModel>?) : MenuScreenStates()
+    data class TagsError(val error: MenusException, val list: List<TagsModel>) : MenuScreenStates()
+    data class ItemsOfTagsError(val error: MenusException, val list: List<ItemOfTagModel>) : MenuScreenStates()
 }
