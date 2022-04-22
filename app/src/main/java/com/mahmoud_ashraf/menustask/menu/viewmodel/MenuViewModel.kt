@@ -32,7 +32,11 @@ class MenuViewModel(
                 pageNumber++
                 if (it.throwable != null)
                     screenState.postValue(
-                        MenuScreenStates.TagsInOfflineMode(handleError(it.throwable ?: return@subscribe), it.data)
+                        MenuScreenStates.TagsInOfflineMode(
+                            handleError(
+                                it.throwable ?: return@subscribe
+                            ), it.data
+                        )
                     )
                 else
                     screenState.postValue(MenuScreenStates.TagsLoadedSuccessfully(it.data))
@@ -62,12 +66,26 @@ class MenuViewModel(
             .subscribeOn(backgroundScheduler)
             .observeOn(backgroundScheduler)
             .subscribe({
-                if (it.throwable != null)
-                    screenState.postValue(
-                        MenuScreenStates.ItemsOfTagsOfflineModel(handleError(it.throwable ?: return@subscribe), it.data)
-                    )
+                if (it.throwable != null) {
+                    if (it.data.isNotEmpty())
+                        screenState.postValue(
+                            MenuScreenStates.ItemsOfTagsOfflineModel(
+                                handleError(
+                                    it.throwable ?: return@subscribe
+                                ), it.data
+                            )
+                        )
+                    else
+                        screenState.postValue(
+                            MenuScreenStates.ItemsOfTagsOfflineModelEmptyState(
+                                handleError(
+                                    it.throwable ?: return@subscribe
+                                )
+                            )
+                        )
+                }
                 else
-                screenState.postValue(MenuScreenStates.ItemsOfTagLoadedSuccessfully(it.data))
+                    screenState.postValue(MenuScreenStates.ItemsOfTagLoadedSuccessfully(it.data))
             }, {
                 it.printStackTrace()
 
@@ -82,7 +100,12 @@ sealed class MenuScreenStates {
     object Loading : MenuScreenStates()
     data class TagsLoadedSuccessfully(val tags: List<TagsModel>) : MenuScreenStates()
     data class ItemsOfTagLoadedSuccessfully(val items: List<ItemOfTagModel>?) : MenuScreenStates()
-    data class TagsInOfflineMode(val error: MenusException, val list: List<TagsModel>) : MenuScreenStates()
-    data class ItemsOfTagsOfflineModel(val error: MenusException, val list: List<ItemOfTagModel>) : MenuScreenStates()
+    data class TagsInOfflineMode(val error: MenusException, val list: List<TagsModel>) :
+        MenuScreenStates()
+
+    data class ItemsOfTagsOfflineModel(val error: MenusException, val list: List<ItemOfTagModel>) :
+        MenuScreenStates()
+
+    data class ItemsOfTagsOfflineModelEmptyState(val error: MenusException) : MenuScreenStates()
     data class Error(val error: MenusException) : MenuScreenStates()
 }
