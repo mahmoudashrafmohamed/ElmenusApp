@@ -12,7 +12,7 @@ import io.reactivex.rxjava3.core.Single
 interface ItemsOfTagsDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertItemsOfTag(tags: List<ItemOfTagLocalEntity>): Completable
+    fun insertItemsOfTag(tags: List<ItemOfTagLocalEntity>)
 
     @Query("SELECT * FROM item_of_tag_table where tag_name=:tagName")
     fun getItemsOfTag(tagName : String): Single<List<ItemOfTagLocalEntity>>

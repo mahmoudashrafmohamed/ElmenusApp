@@ -12,7 +12,7 @@ class TagsLocalDataSource(private val tagsDao: TagsDao,
         return tagsDao.getTags(page)
     }
 
-    fun insertTags(tags : List<TagsLocalEntity>): Completable {
+    fun insertTags(tags : List<TagsLocalEntity>) {
         return tagsDao.insertTags(tags)
     }
 
@@ -20,7 +20,7 @@ class TagsLocalDataSource(private val tagsDao: TagsDao,
         return itemsOfTagsDao.getItemsOfTag(tagName)
     }
 
-    fun insertItemsOfTag(tags: List<ItemOfTagLocalEntity>): Completable{
+    fun insertItemsOfTag(tags: List<ItemOfTagLocalEntity>){
         return itemsOfTagsDao.insertItemsOfTag(tags)
     }
 

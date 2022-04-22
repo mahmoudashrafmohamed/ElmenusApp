@@ -11,15 +11,12 @@ fun  List<Tag>.mapToDomain()  = this.map {
     TagsModel(it.tagName,it.photoURL)
 }
 
-fun ItemsOfTagResponse.mapToDomain() = this.items.map {
-    ItemOfTagModel(it.id,it.name,it.description,it.photoUrl)
-}
-
-fun  List<Tag>.mapToLocalEntity(page: String): List<TagsLocalEntity> {
-   return this.map {
+fun List<TagsModel>.mapToLocalEntity(page: String): List<TagsLocalEntity> {
+    return this.map {
         TagsLocalEntity(tagName = it.tagName, photoURL = it.photoURL, page = page)
     }
 }
+
 
  fun  List<TagsLocalEntity>.mapToRemote() : List<Tag> {
     return this.map {
