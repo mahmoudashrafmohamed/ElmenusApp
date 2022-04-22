@@ -1,12 +1,12 @@
 package com.mahmoud_ashraf.menustask.menu.viewmodel
 
-import androidx.lifecycle.MutableLiveData
 import com.mahmoud_ashraf.domain.menu.models.*
 import com.mahmoud_ashraf.domain.menu.usecase.GetItemsOfTagsUseCase
 import com.mahmoud_ashraf.domain.menu.usecase.GetTagsUseCase
 import com.mahmoud_ashraf.menustask.core.base.BaseViewModel
 import com.mahmoud_ashraf.menustask.core.exceptions.MenusException
 import com.mahmoud_ashraf.menustask.core.handleError
+import com.mahmoud_ashraf.menustask.core.livedata.SingleLiveEvent
 import io.reactivex.rxjava3.core.Scheduler
 import io.reactivex.rxjava3.schedulers.Schedulers
 
@@ -16,7 +16,7 @@ class MenuViewModel(
     private val backgroundScheduler: Scheduler = Schedulers.io()
 ) : BaseViewModel() {
 
-    val screenState by lazy { MutableLiveData<MenuScreenStates>() }
+    val screenState by lazy { SingleLiveEvent<MenuScreenStates>() }
 
     private var canLoading = true
     private var pageNumber = 1
