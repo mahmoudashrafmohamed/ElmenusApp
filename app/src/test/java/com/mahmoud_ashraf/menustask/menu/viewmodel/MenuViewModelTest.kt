@@ -1,10 +1,13 @@
 package com.mahmoud_ashraf.menustask.menu.viewmodel
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.mahmoud_ashraf.domain.menu.models.Data
 import com.mahmoud_ashraf.domain.menu.models.ItemOfTagModel
+import com.mahmoud_ashraf.domain.menu.models.RemoteData
 import com.mahmoud_ashraf.domain.menu.models.TagsModel
 import com.mahmoud_ashraf.domain.menu.usecase.GetItemsOfTagsUseCase
 import com.mahmoud_ashraf.domain.menu.usecase.GetTagsUseCase
+import com.mahmoud_ashraf.menustask.core.exceptions.MenusException
 import com.nhaarman.mockito_kotlin.any
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
@@ -51,7 +54,7 @@ class MenuViewModelTest{
         val getTagsUseCase = Mockito.mock(GetTagsUseCase::class.java)
         val getItemsOfTagsUseCase = Mockito.mock(GetItemsOfTagsUseCase::class.java)
         Mockito.`when`(getTagsUseCase.invoke(any())).thenReturn(
-            Single.just(tags)
+            Single.just(RemoteData(tags))
         )
         val viewModel = MenuViewModel(
             getTagsUseCase=getTagsUseCase,
@@ -69,7 +72,7 @@ class MenuViewModelTest{
         // arrange
         val tags = listOf(TagsModel("tag1","https:www.img.com"))
         val page = "1"
-        val throwable = Throwable()
+        val throwable = MenusException.ServerDown
         val getTagsUseCase = Mockito.mock(GetTagsUseCase::class.java)
         val getItemsOfTagsUseCase = Mockito.mock(GetItemsOfTagsUseCase::class.java)
         Mockito.`when`(getTagsUseCase.invoke(any())).thenReturn(
@@ -92,6 +95,9 @@ class MenuViewModelTest{
         val tagName = "1"
         val getTagsUseCase = Mockito.mock(GetTagsUseCase::class.java)
         val getItemsOfTagsUseCase = Mockito.mock(GetItemsOfTagsUseCase::class.java)
+        Mockito.`when`(getTagsUseCase.invoke(any())).thenReturn(
+            Single.just(RemoteData(listOf()))
+        )
         Mockito.`when`(getItemsOfTagsUseCase.invoke(any())).thenReturn(
             Single.never()
         )
@@ -113,8 +119,11 @@ class MenuViewModelTest{
         val tagName = "1"
         val getTagsUseCase = Mockito.mock(GetTagsUseCase::class.java)
         val getItemsOfTagsUseCase = Mockito.mock(GetItemsOfTagsUseCase::class.java)
+        Mockito.`when`(getTagsUseCase.invoke(any())).thenReturn(
+            Single.just(RemoteData(listOf()))
+        )
         Mockito.`when`(getItemsOfTagsUseCase.invoke(any())).thenReturn(
-            Single.just(itemsOfTags)
+            Single.just(RemoteData(itemsOfTags))
         )
         val viewModel = MenuViewModel(
             getTagsUseCase=getTagsUseCase,
@@ -132,9 +141,12 @@ class MenuViewModelTest{
         // arrange
         val itemsOfTags = listOf(ItemOfTagModel(1,"tag1","https:www.img.com",""))
         val tagName = "1"
-        val throwable = Throwable()
+        val throwable = MenusException.ServerDown
         val getTagsUseCase = Mockito.mock(GetTagsUseCase::class.java)
         val getItemsOfTagsUseCase = Mockito.mock(GetItemsOfTagsUseCase::class.java)
+        Mockito.`when`(getTagsUseCase.invoke(any())).thenReturn(
+            Single.just(RemoteData(listOf()))
+        )
         Mockito.`when`(getItemsOfTagsUseCase.invoke(any())).thenReturn(
             Single.error(throwable)
         )

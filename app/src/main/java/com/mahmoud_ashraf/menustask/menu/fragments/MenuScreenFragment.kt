@@ -80,27 +80,53 @@ class MenuScreenFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         observe(viewModel.screenState, ::observeOnScreenState)
         initViews()
-        viewModel.getTags()
     }
 
     private fun observeOnScreenState(state: MenuScreenStates) {
         when (state) {
             is MenuScreenStates.Loading -> showLoading()
+
+            /*tags*/
             is MenuScreenStates.TagsLoadedSuccessfully -> handleTagsLoadedSuccessfullyState(state)
+            is MenuScreenStates.TagsEmptyState -> handleTagsEmptyState()
             is MenuScreenStates.TagsInOfflineMode -> handleTagsOfflineModeState(state)
+            is MenuScreenStates.TagsOfflineModeEmptyState -> handleTagsOfflineModeEmptyState(state)
+
+            /*itemsOfTag */
             is MenuScreenStates.ItemsOfTagLoadedSuccessfully -> handleItemsOfTagLoadedSuccessfullyState(state)
-            is MenuScreenStates.ItemsOfTagsOfflineModel -> handleItemsOfTagsOfflineModelState(state)
-            is MenuScreenStates.ItemsOfTagsOfflineModelEmptyState ->  handleItemsOfTagsOfflineModelEmptyState(state)
+            is MenuScreenStates.ItemsOfTagsOfflineMode -> handleItemsOfTagsOfflineModelState(state)
+            is MenuScreenStates.ItemsOfTagsOfflineModelModeEmptyState ->  handleItemsOfTagsOfflineModelEmptyState(state)
+            is MenuScreenStates.ItemsOfTagsEmptyState -> handleItemsOfTagsEmptyState(state)
+
             is MenuScreenStates.Error -> state.error.handle()
         }
     }
 
-    private fun handleItemsOfTagsOfflineModelEmptyState(state: MenuScreenStates.ItemsOfTagsOfflineModelEmptyState) {
+    private fun handleTagsOfflineModeEmptyState(state: MenuScreenStates.TagsOfflineModeEmptyState) {
+        hideLoading()
+        state.error.handle()
+        tagsAdapter.submitList(emptyList())
+        showEmptyView()
+    }
+
+    private fun handleTagsEmptyState() {
+        hideLoading()
+        showEmptyView()
+        tagsAdapter.submitList(emptyList())
+    }
+
+    private fun handleItemsOfTagsOfflineModelEmptyState(state: MenuScreenStates.ItemsOfTagsOfflineModelModeEmptyState) {
         hideLoading()
         state.error.handle()
         itemsOfTagAdapter.submitList(emptyList())
         showEmptyView()
     }
+    private fun handleItemsOfTagsEmptyState(state: MenuScreenStates.ItemsOfTagsEmptyState) {
+        hideLoading()
+        itemsOfTagAdapter.submitList(emptyList())
+        showEmptyView()
+    }
+
 
     private fun showEmptyView() {
         binding.emptyView.isVisible = true
@@ -109,7 +135,7 @@ class MenuScreenFragment : Fragment() {
         binding.emptyView.isVisible = false
     }
 
-    private fun handleItemsOfTagsOfflineModelState(state: MenuScreenStates.ItemsOfTagsOfflineModel) {
+    private fun handleItemsOfTagsOfflineModelState(state: MenuScreenStates.ItemsOfTagsOfflineMode) {
         hideLoading()
         state.error.handle()
         itemsOfTagAdapter.submitList(state.list)
@@ -126,11 +152,13 @@ class MenuScreenFragment : Fragment() {
         hideLoading()
         state.error.handle()
         tagsAdapter.submitList(tagsAdapter.currentList.toMutableList().also { it.addAll(state.list) })
+        hideEmptyView()
     }
 
     private fun handleTagsLoadedSuccessfullyState(state: MenuScreenStates.TagsLoadedSuccessfully) {
         hideLoading()
         tagsAdapter.submitList(tagsAdapter.currentList.toMutableList().also { it.addAll(state.tags) })
+        hideEmptyView()
     }
 
     private fun showLoading() {
