@@ -1,13 +1,13 @@
 package com.mahmoud_ashraf.data.repository
 
-import com.mahmoud_ashraf.data.core.exceptions.MenusExceptionWrapper
 import com.mahmoud_ashraf.data.mappers.mapToDomain
 import com.mahmoud_ashraf.data.mappers.mapToLocalEntity
 import com.mahmoud_ashraf.data.mappers.mapToRemote
+import com.mahmoud_ashraf.data.models.local.ItemOfTagLocalEntity
 import com.mahmoud_ashraf.data.sources.local.TagsLocalDataSource
 import com.mahmoud_ashraf.data.sources.remote.TagsRemoteDataSource
-import com.mahmoud_ashraf.domain.menu.models.ItemOfTagModel
-import com.mahmoud_ashraf.domain.menu.models.TagsModel
+import com.mahmoud_ashraf.domain.core.loadRemoteData
+import com.mahmoud_ashraf.domain.menu.models.*
 import com.mahmoud_ashraf.domain.menu.repository.MenuRepository
 import io.reactivex.rxjava3.core.Single
 
@@ -15,43 +15,27 @@ class MenuRepositoryImpl(
     private val tagsRemoteDataSource: TagsRemoteDataSource,
     private val tagsLocalDataSource: TagsLocalDataSource,
 ) : MenuRepository {
-    override fun getTags(page: String): Single<List<TagsModel>> {
-        return tagsRemoteDataSource.getTags(page)
-            .map { it.tags }
-            .flatMap {
-                tagsLocalDataSource.insertTags(it.mapToLocalEntity(page)).andThen(Single.just(it))
-            }
-            .onErrorResumeNext { t ->
-                t.printStackTrace()
+    override fun getTags(page: String): Single<Data<List<TagsModel>>> =
+        loadRemoteData(
+            remote = tagsRemoteDataSource.getTags(page).map { RemoteData(it.tags.mapToDomain()) },
+            local = tagsLocalDataSource.getTags(page)
+                .map { LocalData(it.mapToRemote().mapToDomain()) },
+            saveData = { data -> tagsLocalDataSource.insertTags(data.mapToLocalEntity(page)) }
+        )
 
-                tagsLocalDataSource.getTags(page)
-                    .flatMap {
-                        Single.error(MenusExceptionWrapper(t,it.mapToRemote().mapToDomain()))
-                    }
-            }
-            .map {
-                it.mapToDomain()
-            }
-    }
+    override fun getItemsOfTags(tagName: String): Single<Data<List<ItemOfTagModel>>> =
+        loadRemoteData(
+            remote = tagsRemoteDataSource.getItemsTags(tagName)
+                .map { RemoteData(it.items.mapToDomain()) },
+            local = tagsLocalDataSource.getItemsOfTag(tagName)
+                .map { LocalData(it.mapToRemote().mapToDomain()) },
+            saveData = { data -> tagsLocalDataSource.insertItemsOfTag(data.mapToLocalEntity(tagName)) }
+        )
 
-    override fun getItemsOfTags(tagName: String): Single<List<ItemOfTagModel>> {
-        return tagsRemoteDataSource.getItemsTags(tagName)
-            .map { it.items }
-            .flatMap {
-                tagsLocalDataSource.insertItemsOfTag(it.mapToLocalEntity(tagName)).andThen(Single.just(it))
-            }
-            .onErrorResumeNext { t ->
-                t.printStackTrace()
-                tagsLocalDataSource.getItemsOfTag(tagName)
-                    .flatMap {
-                        Single.error(MenusExceptionWrapper(t,it.mapToRemote().mapToDomain()))
-                    }
-            }
-            .map {
-            it.mapToDomain()
-            }
-    }
 }
+
+
+
 
 
 

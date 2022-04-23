@@ -6,4 +6,7 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="orange">#E32207</color>
+    <color name="skeleton_color">#dddddd</color>
+    <color name="grey_light">#EBEBEB</color>
+
 </resources>

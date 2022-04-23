@@ -30,7 +30,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:background="@color/orange" />
+           android:background="@color/skeleton_color" />
 
         <TextView
             android:id="@+id/tv_tag_name"
@@ -39,11 +39,13 @@
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
             android:textSize="14sp"
+            android:background="@color/skeleton_color"
+            android:textColor="@color/skeleton_color"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/iv_tag"
-            tools:text="Tag Name" />
+            android:text="Tag Name" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

@@ -16,7 +16,7 @@ fun  List<ItemOfTagLocalEntity>.mapToRemote()  : List<Item>{
     }
 }
 
-fun  List<Item>.mapToLocalEntity(tagName : String): List<ItemOfTagLocalEntity> {
+fun  List<ItemOfTagModel>.mapToLocalEntity(tagName: String): List<ItemOfTagLocalEntity> {
     return this.map {
         ItemOfTagLocalEntity(it.id,it.name,it.photoUrl,it.description,tagName)
     }
