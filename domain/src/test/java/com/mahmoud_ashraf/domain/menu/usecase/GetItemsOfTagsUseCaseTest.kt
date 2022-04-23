@@ -13,7 +13,7 @@ import java.net.UnknownHostException
 class GetItemsOfTagsUseCaseTest {
 
     @Test
-    fun `GetItemsOfTagsUseCase invoke() with tagName will invoke MenuRepository`() {
+    fun `GetItemsOfTagsUseCase invoke() with tagName will invoke getItemsOfTags() in MenuRepository`() {
         // arrange
         val tagName = "4 - Deserts"
         val items = listOf(

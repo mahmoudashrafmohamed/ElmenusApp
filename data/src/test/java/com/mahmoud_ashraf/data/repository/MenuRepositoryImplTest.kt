@@ -9,7 +9,6 @@ import com.mahmoud_ashraf.data.sources.local.TagsLocalDataSource
 import com.mahmoud_ashraf.data.sources.remote.TagsRemoteDataSource
 import com.mahmoud_ashraf.domain.menu.models.TagsModel
 import com.nhaarman.mockito_kotlin.any
-import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
 import org.junit.Assert
 import org.junit.Test
@@ -23,14 +22,12 @@ class MenuRepositoryImplTest {
         val page = "1"
         val remoteDataSource = Mockito.mock(TagsRemoteDataSource::class.java)
         val localDataSource = Mockito.mock(TagsLocalDataSource::class.java)
-        Mockito.`when`(remoteDataSource.getTags(any())).thenReturn(
-            Single.just(TagsResponse(listOf()))
-        )
+        Mockito.`when`(remoteDataSource.getTags(any())).thenReturn(Single.just(TagsResponse(listOf())))
+        Mockito.`when`(localDataSource.getTags(any())).thenReturn(Single.just(listOf()))
+        Mockito.doNothing().`when`(localDataSource).insertTags(any())
         val menuRepositoryImpl = MenuRepositoryImpl(remoteDataSource, localDataSource)
-
         // act
         val resultObserver = menuRepositoryImpl.getTags(page).test()
-
         // assert
         Mockito.verify(remoteDataSource).getTags(page)
         resultObserver.dispose()
@@ -46,9 +43,8 @@ class MenuRepositoryImplTest {
         Mockito.`when`(remoteDataSource.getTags(any())).thenReturn(
             Single.just(TagsResponse(tags))
         )
-        Mockito.`when`(localDataSource.insertTags(any())).thenReturn(
-            Completable.complete()
-        )
+        Mockito.`when`(localDataSource.getTags(any())).thenReturn(Single.just(listOf()))
+        Mockito.doNothing().`when`(localDataSource).insertTags(any())
         val menuRepositoryImpl = MenuRepositoryImpl(remoteDataSource, localDataSource)
 
         // act
@@ -70,9 +66,8 @@ class MenuRepositoryImplTest {
         Mockito.`when`(remoteDataSource.getTags(any())).thenReturn(
             Single.error(throwable)
         )
-        Mockito.`when`(localDataSource.insertTags(any())).thenReturn(
-            Completable.complete()
-        )
+        Mockito.`when`(localDataSource.getTags(any())).thenReturn(Single.just(listOf()))
+        Mockito.doNothing().`when`(localDataSource).insertTags(any())
         val menuRepositoryImpl = MenuRepositoryImpl(remoteDataSource, localDataSource)
 
         // act
@@ -102,6 +97,10 @@ class MenuRepositoryImplTest {
         Mockito.`when`(remoteDataSource.getItemsTags(any())).thenReturn(
             Single.just(ItemsOfTagResponse(listOf()))
         )
+        Mockito.`when`(localDataSource.getItemsOfTag(any())).thenReturn(
+            Single.just(listOf())
+        )
+        Mockito.doNothing().`when`(localDataSource).insertTags(any())
         val menuRepositoryImpl = MenuRepositoryImpl(remoteDataSource, localDataSource)
 
         // act
@@ -122,9 +121,10 @@ class MenuRepositoryImplTest {
         Mockito.`when`(remoteDataSource.getItemsTags(any())).thenReturn(
             Single.just(ItemsOfTagResponse(items))
         )
-        Mockito.`when`(localDataSource.insertItemsOfTag(any())).thenReturn(
-            Completable.complete()
+        Mockito.`when`(localDataSource.getItemsOfTag(any())).thenReturn(
+            Single.just(listOf())
         )
+        Mockito.doNothing().`when`(localDataSource).insertItemsOfTag(any())
         val menuRepositoryImpl = MenuRepositoryImpl(remoteDataSource, localDataSource)
 
         // act

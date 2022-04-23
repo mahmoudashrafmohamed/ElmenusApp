@@ -12,7 +12,7 @@ import java.net.UnknownHostException
 class GetTagsUseCaseTest {
 
     @Test
-    fun `GetTagsUseCase invoke() with page will invoke MenuRepository`() {
+    fun `GetTagsUseCase invoke() with page will invoke getTags() in MenuRepository`() {
         // arrange
         val page = "1"
         val tags = listOf(
