@@ -12,6 +12,12 @@ Simple App that display a list of tags and menu items for each tag.
 - applied unit test on app layers to ensures that all code meets quality standards before it's deployed.
 - used different git branches to implement every feature  to work on a particular feature without disturbing the main codebase.
 
+# Clean Architecture 
+![clean_architecture_reloaded_main](https://user-images.githubusercontent.com/18033003/164913756-59ce32bb-ba5a-4f5b-ba44-64b046a297f4.png)
+
+# Clean Architecture layers 
+![clean_architecture_reloaded_layers (1)](https://user-images.githubusercontent.com/18033003/164913902-7cba853b-784e-4092-8d14-317838e4b2cd.png)
+
 ## Screenshots
 ![ezgif-3-db7957ebd9](https://user-images.githubusercontent.com/18033003/164913353-a91fba2c-7156-48c8-860f-cfa4c94906c5.gif)
 
