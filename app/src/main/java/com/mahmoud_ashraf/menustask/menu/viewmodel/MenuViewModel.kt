@@ -8,6 +8,7 @@ import com.mahmoud_ashraf.menustask.core.exceptions.MenusException
 import com.mahmoud_ashraf.menustask.core.handleError
 import com.mahmoud_ashraf.menustask.core.livedata.SingleLiveEvent
 import io.reactivex.rxjava3.core.Scheduler
+import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 
 class MenuViewModel(
@@ -26,15 +27,22 @@ class MenuViewModel(
     }
 
      fun getTags(page: String = pageNumber.toString()) {
-        canLoading = false
-        screenState.postValue(MenuScreenStates.Loading)
         getTagsUseCase(page)
             .subscribeOn(backgroundScheduler)
             .observeOn(backgroundScheduler)
+            .doOnSubscribe(::handleTagsLoading)
             .map(::handleTagsLogic)
             .onErrorReturn(::handleTagsError)
             .subscribe(screenState::postValue)
             .also(::addDisposable)
+    }
+
+    private fun handleTagsLoading(disposable: Disposable) {
+        canLoading = false
+        if (pageNumber==1)
+            screenState.postValue(MenuScreenStates.FirstLoading)
+        else
+            screenState.postValue(MenuScreenStates.Loading)
     }
 
     private fun handleTagsLogic(tags: Data<List<TagsModel>>): MenuScreenStates {
@@ -116,6 +124,8 @@ class MenuViewModel(
 }
 
 sealed class MenuScreenStates {
+    // to show shimmer on first load only
+    object FirstLoading : MenuScreenStates()
     object Loading : MenuScreenStates()
 
     /*tags*/

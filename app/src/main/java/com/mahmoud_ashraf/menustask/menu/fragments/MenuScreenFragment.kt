@@ -25,7 +25,6 @@ import com.mahmoud_ashraf.menustask.menu.adapters.TagsAdapter
 import com.mahmoud_ashraf.menustask.menu.viewmodel.MenuScreenStates
 import com.mahmoud_ashraf.menustask.menu.viewmodel.MenuViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import java.text.FieldPosition
 
 class MenuScreenFragment : Fragment() {
 
@@ -36,7 +35,7 @@ class MenuScreenFragment : Fragment() {
     // This property is only valid between onCreateView and onDestroyView.
     private val binding get() = _binding!!
 
-    private val tagsAdapter by lazy { TagsAdapter(onItemClicked = ::onTagClicked) }
+    private val tagsAdapter by lazy {  TagsAdapter(onItemClicked = ::onTagClicked)}
     private val itemsOfTagAdapter by lazy { ItemsOfTagAdapter(onItemClicked = ::onItemOfTagClicked) }
 
     private fun onItemOfTagClicked(itemOfTagModel: ItemOfTagModel, ivItem: ImageView) {
@@ -90,6 +89,7 @@ class MenuScreenFragment : Fragment() {
 
     private fun observeOnScreenState(state: MenuScreenStates) {
         when (state) {
+            is MenuScreenStates.FirstLoading -> showShimmer()
             is MenuScreenStates.Loading -> showLoading()
 
             /*tags*/
@@ -114,6 +114,7 @@ class MenuScreenFragment : Fragment() {
 
     private fun handleTagsOfflineModeEmptyState(state: MenuScreenStates.TagsOfflineModeEmptyState) {
         hideLoading()
+        hideShimmer()
         state.error.handle()
         tagsAdapter.submitList(emptyList())
         showEmptyView()
@@ -121,6 +122,7 @@ class MenuScreenFragment : Fragment() {
 
     private fun handleTagsEmptyState() {
         hideLoading()
+        hideShimmer()
         showEmptyView()
         tagsAdapter.submitList(emptyList())
     }
@@ -162,6 +164,7 @@ class MenuScreenFragment : Fragment() {
 
     private fun handleTagsOfflineModeState(state: MenuScreenStates.TagsInOfflineMode) {
         hideLoading()
+        hideShimmer()
         state.error.handle()
         tagsAdapter.submitList(
             tagsAdapter.currentList.toMutableList().also { it.addAll(state.list) })
@@ -170,6 +173,7 @@ class MenuScreenFragment : Fragment() {
 
     private fun handleTagsLoadedSuccessfullyState(state: MenuScreenStates.TagsLoadedSuccessfully) {
         hideLoading()
+        hideShimmer()
         tagsAdapter.submitList(
             tagsAdapter.currentList.toMutableList().also { it.addAll(state.tags) })
         hideEmptyView()
@@ -177,6 +181,22 @@ class MenuScreenFragment : Fragment() {
 
     private fun showLoading() {
         binding.progressBar.isVisible = true
+    }
+
+    private fun showShimmer(){
+        binding.nsContainer.isVisible = false
+        binding.shimmerView.apply {
+            isVisible = true
+            startShimmer()
+        }
+    }
+
+    private fun hideShimmer(){
+        binding.nsContainer.isVisible = true
+        binding.shimmerView.apply {
+            isVisible = false
+            stopShimmer()
+        }
     }
 
     private fun hideLoading() {
@@ -194,6 +214,10 @@ class MenuScreenFragment : Fragment() {
                     viewModel.loadMoreTags()
                 }
             })
+            tagsAdapter.currentList.firstOrNull { it.isSelected }?.tagName?.let {
+                tvSelectedTag.text = getString(R.string.selected_tag,it)
+            }
+
             rvItems.adapter = itemsOfTagAdapter
 
             postponeEnterTransition()
