@@ -25,6 +25,7 @@ import com.mahmoud_ashraf.menustask.menu.adapters.TagsAdapter
 import com.mahmoud_ashraf.menustask.menu.viewmodel.MenuScreenStates
 import com.mahmoud_ashraf.menustask.menu.viewmodel.MenuViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.text.FieldPosition
 
 class MenuScreenFragment : Fragment() {
 
@@ -56,7 +57,7 @@ class MenuScreenFragment : Fragment() {
         )
     ).build()
 
-    private fun getBundleOfTagData(itemOfTagModel: ItemOfTagModel)=
+    private fun getBundleOfTagData(itemOfTagModel: ItemOfTagModel) =
         Bundle().apply {
             putString(ITEM_DESC, itemOfTagModel.description)
             putString(PHOTO_URL, itemOfTagModel.photoUrl)
@@ -64,6 +65,10 @@ class MenuScreenFragment : Fragment() {
 
 
     private fun onTagClicked(tagsModel: TagsModel) {
+        tagsAdapter.submitList(tagsAdapter.currentList.toMutableList().map {
+            if (tagsModel.tagName == it.tagName) it.copy(isSelected = true)
+            else it.copy(isSelected = false)
+        })
         viewModel.getItemsOfTags(tagsModel.tagName)
     }
 
@@ -93,9 +98,13 @@ class MenuScreenFragment : Fragment() {
             is MenuScreenStates.TagsOfflineModeEmptyState -> handleTagsOfflineModeEmptyState(state)
 
             /*itemsOfTag */
-            is MenuScreenStates.ItemsOfTagLoadedSuccessfully -> handleItemsOfTagLoadedSuccessfullyState(state)
+            is MenuScreenStates.ItemsOfTagLoadedSuccessfully -> handleItemsOfTagLoadedSuccessfullyState(
+                state
+            )
             is MenuScreenStates.ItemsOfTagsOfflineMode -> handleItemsOfTagsOfflineModelState(state)
-            is MenuScreenStates.ItemsOfTagsOfflineModelModeEmptyState ->  handleItemsOfTagsOfflineModelEmptyState(state)
+            is MenuScreenStates.ItemsOfTagsOfflineModelModeEmptyState -> handleItemsOfTagsOfflineModelEmptyState(
+                state
+            )
             is MenuScreenStates.ItemsOfTagsEmptyState -> handleItemsOfTagsEmptyState(state)
 
             is MenuScreenStates.Error -> state.error.handle()
@@ -121,6 +130,7 @@ class MenuScreenFragment : Fragment() {
         itemsOfTagAdapter.submitList(emptyList())
         showEmptyView()
     }
+
     private fun handleItemsOfTagsEmptyState(state: MenuScreenStates.ItemsOfTagsEmptyState) {
         hideLoading()
         itemsOfTagAdapter.submitList(emptyList())
@@ -131,6 +141,7 @@ class MenuScreenFragment : Fragment() {
     private fun showEmptyView() {
         binding.emptyView.isVisible = true
     }
+
     private fun hideEmptyView() {
         binding.emptyView.isVisible = false
     }
@@ -151,13 +162,15 @@ class MenuScreenFragment : Fragment() {
     private fun handleTagsOfflineModeState(state: MenuScreenStates.TagsInOfflineMode) {
         hideLoading()
         state.error.handle()
-        tagsAdapter.submitList(tagsAdapter.currentList.toMutableList().also { it.addAll(state.list) })
+        tagsAdapter.submitList(
+            tagsAdapter.currentList.toMutableList().also { it.addAll(state.list) })
         hideEmptyView()
     }
 
     private fun handleTagsLoadedSuccessfullyState(state: MenuScreenStates.TagsLoadedSuccessfully) {
         hideLoading()
-        tagsAdapter.submitList(tagsAdapter.currentList.toMutableList().also { it.addAll(state.tags) })
+        tagsAdapter.submitList(
+            tagsAdapter.currentList.toMutableList().also { it.addAll(state.tags) })
         hideEmptyView()
     }
 
@@ -172,6 +185,7 @@ class MenuScreenFragment : Fragment() {
     private fun initViews() {
         with(binding) {
             rvTags.adapter = tagsAdapter
+            rvTags.itemAnimator = null
             rvTags.addOnScrollListener(object : ScrollingPagination(
                 rvTags.layoutManager as LinearLayoutManager
             ) {

@@ -1,5 +1,6 @@
 package com.mahmoud_ashraf.domain.menu.usecase
 
+import com.mahmoud_ashraf.domain.menu.models.RemoteData
 import com.mahmoud_ashraf.domain.menu.models.TagsModel
 import com.mahmoud_ashraf.domain.menu.repository.MenuRepository
 import com.nhaarman.mockito_kotlin.any
@@ -24,9 +25,10 @@ class GetTagsUseCaseTest {
                 "https://s3-eu-west-1.amazonaws.com//elmenusv5/Normal/b2276d5d-27b7-11e8-add5-0242ac110011.jpg"
             ),
         )
+        val tagsData = RemoteData(tags)
         val repository = Mockito.mock(MenuRepository::class.java)
         Mockito.`when`(repository.getTags(any())).thenReturn(
-            Single.just(tags)
+            Single.just(tagsData)
         )
 
         val getTagsUseCase = GetTagsUseCase(repository)
@@ -53,9 +55,10 @@ class GetTagsUseCaseTest {
                 "https://s3-eu-west-1.amazonaws.com//elmenusv5/Normal/b2276d5d-27b7-11e8-add5-0242ac110011.jpg"
             ),
         )
+        val tagsData = RemoteData(tags)
         val repository = Mockito.mock(MenuRepository::class.java)
         Mockito.`when`(repository.getTags(any())).thenReturn(
-            Single.just(tags)
+            Single.just(tagsData)
         )
 
         val getTagsUseCase = GetTagsUseCase(repository)
@@ -64,7 +67,7 @@ class GetTagsUseCaseTest {
         val resultObserver = getTagsUseCase(page).test()
 
         // assert
-        resultObserver.assertValue(tags)
+        resultObserver.assertValue(tagsData)
         resultObserver.dispose()
     }
 

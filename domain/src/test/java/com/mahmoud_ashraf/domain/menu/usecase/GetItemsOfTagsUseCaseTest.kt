@@ -1,6 +1,8 @@
 package com.mahmoud_ashraf.domain.menu.usecase
 
 import com.mahmoud_ashraf.domain.menu.models.ItemOfTagModel
+import com.mahmoud_ashraf.domain.menu.models.LocalData
+import com.mahmoud_ashraf.domain.menu.models.RemoteData
 import com.mahmoud_ashraf.domain.menu.repository.MenuRepository
 import com.nhaarman.mockito_kotlin.any
 import io.reactivex.rxjava3.core.Single
@@ -31,7 +33,7 @@ class GetItemsOfTagsUseCaseTest {
         )
         val repository = Mockito.mock(MenuRepository::class.java)
         Mockito.`when`(repository.getItemsOfTags(any())).thenReturn(
-            Single.just(items)
+            Single.just(LocalData(items))
         )
 
         val getItemsOfTagsUseCase = GetItemsOfTagsUseCase(repository)
@@ -62,9 +64,11 @@ class GetItemsOfTagsUseCaseTest {
             ),
 
         )
+
+        val itemsData = RemoteData(items)
         val repository = Mockito.mock(MenuRepository::class.java)
         Mockito.`when`(repository.getItemsOfTags(any())).thenReturn(
-            Single.just(items)
+            Single.just(itemsData)
         )
 
         val getItemsOfTagsUseCase = GetItemsOfTagsUseCase(repository)
@@ -73,7 +77,7 @@ class GetItemsOfTagsUseCaseTest {
         val resultObserver = getItemsOfTagsUseCase(tagName).test()
 
         // assert
-        resultObserver.assertValue(items)
+        resultObserver.assertValue(itemsData)
         resultObserver.dispose()
     }
 

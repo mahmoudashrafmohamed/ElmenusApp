@@ -1,8 +1,10 @@
 package com.mahmoud_ashraf.menustask.menu.adapters
 
 import android.net.Uri
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -31,9 +33,17 @@ class TagsViewHolder(
         onItemClicked: (TagsModel) -> Unit
     ) {
        with(binding){
-           root.setOnClickListener { onItemClicked(data) }
+           cvContainer.setOnClickListener {
+               Log.e("clicked","+++++++++++++")
+               onItemClicked(data)
+           }
            Glide.with(ivTag.context).load(Uri.parse(data.photoURL)).placeholder(R.drawable.img_placeholder).into(ivTag)
            tvTagName.text = data.tagName
+
+           if (data.isSelected)
+               clContainer.background = ContextCompat.getDrawable(itemView.context,R.drawable.ic_border_orange_bg)
+           else
+               clContainer.background =ContextCompat.getDrawable(itemView.context,R.drawable.ic_white_border_bg)
        }
     }
 }
