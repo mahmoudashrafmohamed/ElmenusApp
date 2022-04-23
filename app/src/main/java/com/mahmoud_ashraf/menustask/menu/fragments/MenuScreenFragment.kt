@@ -65,6 +65,7 @@ class MenuScreenFragment : Fragment() {
 
 
     private fun onTagClicked(tagsModel: TagsModel) {
+        binding.tvSelectedTag.text = getString(R.string.selected_tag,tagsModel.tagName)
         tagsAdapter.submitList(tagsAdapter.currentList.toMutableList().map {
             if (tagsModel.tagName == it.tagName) it.copy(isSelected = true)
             else it.copy(isSelected = false)
