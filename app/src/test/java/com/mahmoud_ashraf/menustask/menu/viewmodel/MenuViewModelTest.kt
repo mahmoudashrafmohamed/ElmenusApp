@@ -42,7 +42,7 @@ class MenuViewModelTest{
         // act
         viewModel.getTags(page = page)
         //assert
-        Assert.assertEquals(MenuScreenStates.Loading, viewModel.screenState.value)
+        Assert.assertEquals(MenuScreenStates.FirstLoading, viewModel.screenState.value)
     }
 
     @Test
